@@ -31,6 +31,23 @@ namespace eDynamicLearning.UnitTests
             Assert.Equal(expected, okObjectResult.Value);
         }
 
+        [Fact]
+        public void Json_ReturnsAOkObjectResult_WithAExactInput()
+        {
+            //Arrange
+            const string input = "dog";
+            const string expected = "cat";
+            var controller = new HomeController(_stringService);
+
+            //Act
+            var actionResult = controller.JsonData(input);
+
+            //Assert
+            var okObjectResult = Assert.IsType<OkObjectResult>(actionResult);
+            Assert.NotNull(okObjectResult);
+            Assert.Equal(expected, okObjectResult.Value);
+        }
+
 
         [Fact]
         public void Index_ReturnsAOkObjectResult_WithAContainsInput()
