@@ -15,7 +15,7 @@ namespace eDynamicLearning.UnitTests
         }
 
         [Fact]
-        public void HomeController_Index_TestWithExactString()
+        public void Index_ReturnsAOkObjectResult_WithAExactInput()
         {
             //Arrange
             const string input = "dog";
@@ -33,7 +33,7 @@ namespace eDynamicLearning.UnitTests
 
 
         [Fact]
-        public void HomeController_Index_TestWithContainsString()
+        public void Index_ReturnsAOkObjectResult_WithAContainsInput()
         {
             //Arrange
             const string input = "This is a test with a string that contains dog";
@@ -47,6 +47,23 @@ namespace eDynamicLearning.UnitTests
             var okObjectResult = Assert.IsType<OkObjectResult>(actionResult);
             Assert.NotNull(okObjectResult);
             Assert.Equal(expected, okObjectResult.Value);
+        }
+
+        [Fact]
+        public void Index_ReturnsABadRequestObjectResult_WithANullInput()
+        {
+            //Arrange
+            string input = null;
+            const string expected = "Input cannot be an empty string";
+            var controller = new HomeController(_stringService);
+
+            //Act
+            var actionResult = controller.Index(input);
+
+            //Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult);
+            Assert.NotNull(badRequestResult);
+            Assert.Equal(expected, badRequestResult.Value);
         }
 
     }
