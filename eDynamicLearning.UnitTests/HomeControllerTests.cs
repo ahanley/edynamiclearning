@@ -1,26 +1,20 @@
 using eDynamicLearning.Api.Controllers;
-using eDynamicLearning.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace eDynamicLearning.UnitTests
 {
     public class HomeControllerTests
     {
-        private readonly IStringService _stringService;
-
-        public HomeControllerTests()
-        {
-           _stringService = new StringService();
-        }
 
         [Fact]
-        public void Index_ReturnsAOkObjectResult_WithAExactInput()
+        public void Index_ReturnsAOkObjectResult_WithArbitraryJsonInput()
         {
             //Arrange
-            const string input = "dog";
-            const string expected = "cat";
-            var controller = new HomeController(_stringService);
+            const string input = "{\"key1\": \"dog\", \"key2\": \"this is a test dog\", \"Test Nested Object\": {\"key3\": \"Another Test dog\", \"key4\": \"dog\", \"key5\": \"this is a cat\"}}";
+            var expected = JToken.Parse("{\"key1\":\"cat\",\"key2\":\"this is a test dog\",\"Test Nested Object\":{\"key3\":\"Another Test dog\",\"key4\":\"cat\",\"key5\":\"this is a cat\"}}");
+            var controller = new HomeController();
 
             //Act
             var actionResult = controller.Index(input);
@@ -28,51 +22,18 @@ namespace eDynamicLearning.UnitTests
             //Assert
             var okObjectResult = Assert.IsType<OkObjectResult>(actionResult);
             Assert.NotNull(okObjectResult);
-            Assert.Equal(expected, okObjectResult.Value);
+            Assert.NotNull(okObjectResult.Value);
+            var actual = JToken.Parse(okObjectResult.Value?.ToString());
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public void Json_ReturnsAOkObjectResult_WithAExactInput()
+        public void Index_ReturnsAOkObjectResult_WithEmptyInput()
         {
             //Arrange
-            const string input = "dog";
-            const string expected = "cat";
-            var controller = new HomeController(_stringService);
-
-            //Act
-            var actionResult = controller.JsonData(input);
-
-            //Assert
-            var okObjectResult = Assert.IsType<OkObjectResult>(actionResult);
-            Assert.NotNull(okObjectResult);
-            Assert.Equal(expected, okObjectResult.Value);
-        }
-
-
-        [Fact]
-        public void Index_ReturnsAOkObjectResult_WithAContainsInput()
-        {
-            //Arrange
-            const string input = "This is a test with a string that contains dog";
-            const string expected = "This is a test with a string that contains dog";
-            var controller = new HomeController(_stringService);
-
-            //Act
-            var actionResult = controller.Index(input);
-
-            //Assert
-            var okObjectResult = Assert.IsType<OkObjectResult>(actionResult);
-            Assert.NotNull(okObjectResult);
-            Assert.Equal(expected, okObjectResult.Value);
-        }
-
-        [Fact]
-        public void Index_ReturnsABadRequestObjectResult_WithANullInput()
-        {
-            //Arrange
-            string input = null;
+            const string input = "";
             const string expected = "Input cannot be an empty string";
-            var controller = new HomeController(_stringService);
+            var controller = new HomeController();
 
             //Act
             var actionResult = controller.Index(input);
@@ -80,6 +41,7 @@ namespace eDynamicLearning.UnitTests
             //Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult);
             Assert.NotNull(badRequestResult);
+            Assert.NotNull(badRequestResult.Value);
             Assert.Equal(expected, badRequestResult.Value);
         }
 
