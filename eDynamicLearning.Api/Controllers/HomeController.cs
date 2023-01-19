@@ -8,6 +8,10 @@ namespace eDynamicLearning.Api.Controllers
     public class HomeController : ControllerBase
     {
         private readonly IStringService _stringService;
+        private const string FindWhat = "dog";
+        private const string ReplaceWith = "cat";
+
+
         public HomeController(IStringService stringService)
         {
             _stringService = stringService;
@@ -19,9 +23,22 @@ namespace eDynamicLearning.Api.Controllers
             try
             {
                 if (string.IsNullOrEmpty(input)) { throw new ArgumentOutOfRangeException(input, "Input cannot be an empty string"); }
-                const string find = "dog";
-                const string replaceWith = "cat";
-                var response = input == find ? _stringService.ReplaceString(input, find, replaceWith) : input;
+                var response = input == FindWhat ? _stringService.ReplaceString(input, FindWhat, ReplaceWith) : input;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult JsonData([FromBody] string input)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(input)) { throw new ArgumentOutOfRangeException(input, "Input cannot be an empty string"); }
+                var response = input == FindWhat ? _stringService.ReplaceString(input, FindWhat, ReplaceWith) : input;
                 return Ok(response);
             }
             catch (Exception ex)
